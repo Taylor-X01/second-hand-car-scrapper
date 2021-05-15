@@ -1,0 +1,41 @@
+
+{% block list %}
+
+{% for car in car_list %}
+<body>
+            <div class="container card mb-3 text-dark bg-light" style="max-width: 1200px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                    <!-- clickable car picture ; redirect to the source -->
+                    <a href="{{car.url}}">
+                        <img src="/static/img/car_test.jpeg" class="car_img" width="350" height="300" style="padding:10px; border-radius:15px;" >
+                    </a>
+                    </div>
+                    <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{car.brand}} {{car.model}} à {{car.price}} Dh</h5>
+                        <p class="card-text"><small class="text-muted">{{car.city}}</small></p>
+                        <!-- list of vehicule options -->
+                        <p>
+                            
+                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample{{car.id}}" aria-expanded="false" aria-controls="collapseExample{{car.id}}">
+                                Plus d'info
+                            </button>
+                        </p> 
+                        <div class="card collapse" id="collapseExample{{car.id}}">
+                            <ul>
+                                <p class="card-text">Kilométrage : {{car.km}} Km</p>
+                                <p class="card-text">Couleur : Noir</p>
+                                <p class="card-text">Boite de vitesse : Manuelle</p>
+                                <!-- And other options-->
+                            </ul>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div> 
+        
+    </body>
+{% endfor %}
+
+{% endblock list %}

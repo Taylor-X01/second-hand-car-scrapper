@@ -21,6 +21,9 @@ from .views import (
     main_page,
     result_page,
 )
+from scraper.views import(
+    get_item,
+)
 
 
 urlpatterns = [
@@ -29,6 +32,6 @@ urlpatterns = [
     path('',main_page),
     # path('about/',about_page),
     # path('contact/', contact_page),
-    path('results/',result_page),
+    path('results/',get_item),
     
 ]

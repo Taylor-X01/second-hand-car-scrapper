@@ -36,40 +36,33 @@
         </div>
     </div>
 
-        <body>
-        <div class='box'>
-            <div class='item' id='1'>
-                {{item_name}}</br>
-                {{item_model}} à {{item_price}}</br>
-                Ville : {{item_city}}</br>
-            </div>
-
-        <div class="card mb-3 text-dark bg-light" style="max-width: 1200px;">
-            <div class="row g-0">
-                <div class="col-md-4">
-                <!-- clickable car picture ; redirect to the source -->
-                <a href="https://www.wandaloo.com/occasion/mercedes-classe-c-diesel-occasion-agadir-maroc/34048.html">
-                    <img src="/static/img/car_test.jpeg" alt="voiture d'occasion" width="350" height="300" style="padding:10px; border-radius:15px;">
-                </a>
+        {% comment %} <body>
+            <div class="container card mb-3 text-dark bg-light" style="max-width: 1200px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                    <!-- clickable car picture ; redirect to the source -->
+                    <a href="https://www.wandaloo.com/occasion/mercedes-classe-c-diesel-occasion-agadir-maroc/34048.html">
+                        <img src="/static/img/car_test.jpeg" alt="voiture d'occasion" width="350" height="300" style="padding:10px; border-radius:15px;">
+                    </a>
+                    </div>
+                    <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{car_brand}} {{car_model}} à {{car_price}} Dh</h5>
+                        <p class="card-text"><small class="text-muted">{{car_city}}</small></p>
+                        <!-- list of vehicule options -->
+                        <ul>
+                            <p class="card-text">Kilométrage : {{car_km}} Km</p>
+                            <!-- And other options-->
+                        </ul>
+                    </div>
+                    </div>
                 </div>
-                <div class="col-md-8">
-                <div class="card-body">
-                    <h5 class="card-title">{{item_name}} : {{item_model}} à {{item_price}}</h5>
-                    <p class="card-text"><small class="text-muted">{{item_city}}</small></p>
-                    <!-- list of vehicule options -->
-                    <ul>
-                        <p class="card-text">Option 1 : {{item_option1}}</p>
-                        <p class="card-text">Option 2 : {{item_option2}}</p>
-                        <p class="card-text">Option 3 : {{item_option3}}</p>
-                        <p class="card-text">Option 4 : {{item_option4}}</p>
-                    </ul>
-                </div>
-                </div>
-            </div>
-        </div> 
-       
-    </body>
-
+            </div> 
+        
+    </body> {% endcomment %}
+    {% block list %}
+        {% include 'car_card.html' %}
+    {% endblock list %}
 
     <!-- Optional JavaScript; choose one of the two! -->
 

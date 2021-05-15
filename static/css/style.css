@@ -5,6 +5,12 @@ body {
   /* background-repeat: no-repeat;   */
 }
 
+.car_img:hover{
+  padding:10px !important; 
+  border-radius:15px !important;
+  opacity: .50 !important;
+}
+
 .navigation{
   background-color: rgb(49, 72, 92);
 }
