@@ -8,10 +8,10 @@
                     <div class="col-md-4">
                     <!-- clickable car picture ; redirect to the source -->
                     <a href="{{car.url}}">
-                        <img src="/static/img/car_test.jpeg" class="car_img" width="350" height="300" style="padding:10px; border-radius:15px;" >
+                        <img src="/static/img/car_test.jpeg" class="car_img" width="350" height="300" style="padding:10px; border-radius:20px;" >
                     </a>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-8 rounded-3">
                     <div class="card-body">
                         <h5 class="card-title">{{car.brand}} {{car.model}} à {{car.price}} Dh</h5>
                         <p class="card-text"><small class="text-muted">{{car.city}}</small></p>
@@ -27,6 +27,7 @@
                                 <p class="card-text">Kilométrage : {{car.km}} Km</p>
                                 <p class="card-text">Couleur : Noir</p>
                                 <p class="card-text">Boite de vitesse : Manuelle</p>
+                                <p class="card-text">Radio Bluetooth : OUI</p>
                                 <!-- And other options-->
                             </ul>
                         </div>

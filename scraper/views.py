@@ -3,7 +3,7 @@ from .models import car_data
 
 # Create your views here.
 def get_item(request):
-    qs = car_data.objects.filter()
+    qs = car_data.objects.filter()    
     context = {
         'car_list'  : qs,
         # 'car_brand' : qs.brand,
