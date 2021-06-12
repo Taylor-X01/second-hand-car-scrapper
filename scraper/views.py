@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from .models import car_data
-from scraper.scrap_selenium import run_scraper
+from .scrap_selenium import run_scraper
+from .form import Fields
 import os
 import json
-
+from django.forms.models import model_to_dict
 THIS_FILE = os.path.dirname(__file__)
 
 context_search = {
@@ -16,8 +17,9 @@ context_search = {
 
 # Create your views here.
 def get_item(request):
-    print(request.POST)
-    [data, data1] = run_scraper(context_search)
+    forms = request.POST
+    print(forms.dict())
+    # [data, data1] = run_scraper(context_search)
     # qs = car_data.objects.filter() 
     path = os.path.join(THIS_FILE, 'data')
     os.makedirs(path, exist_ok=True)
@@ -38,7 +40,7 @@ def get_item(request):
         print(data["Modele"])
    
     context = {
-        'car_list'  : data,
+        'car_list_len'  : len(data["Modele"]),
         'car_model' : data["Modele"],
         'car_year'  : data["Annee"],
         'car_km'    : data["Kilometrage"],

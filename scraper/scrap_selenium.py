@@ -325,9 +325,9 @@ def run_scraper(context_search):
 
         # print("\nSaving data in a csv file\n")
 
-        # df = pd.DataFrame(data,columns=header_col1)
-        # df.to_csv(filepath, index=False)
-        # df.to_json(filepath_json)
+        df = pd.DataFrame(data,columns=header_col1)
+        df.to_csv(filepath, index=False)
+        df.to_json(filepath_json)
 
         time.sleep(1)
         
