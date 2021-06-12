@@ -12,14 +12,14 @@ context_search = {
     "model": "logan",
     "city": "rabat",
     "year": "2009",
-
 }
 
 # Create your views here.
 def get_item(request):
     forms = request.POST
     print(forms.dict())
-    # [data, data1] = run_scraper(context_search)
+    context_search = forms.dict()
+    [data, data1] = run_scraper(context_search)
     # qs = car_data.objects.filter() 
     path = os.path.join(THIS_FILE, 'data')
     os.makedirs(path, exist_ok=True)

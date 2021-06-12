@@ -50,6 +50,10 @@ def search_moteur_ma(browser,context):
     year.click()
     time.sleep(0.4)
 
+    km    = browser.find_element_by_xpath(f"//option[contains(@value,'{context_search['year']}')]")
+    km.click()
+    time.sleep(0.4)
+
 
     # city_check = browser.find_element_by_xpath("//select[contains(@id,'regions_cities')]")
     # city_check.click()
@@ -287,7 +291,7 @@ def run_scraper(context_search):
         print("Base URL : ",browser.current_url)
         links = get_items_links(browser)
         print(links)
-        [data, header_col] = scrap_pages(browser, links)
+        [data_wandaloo, header_col] = scrap_pages(browser, links)
         
 
         # SAVE SEARCH RESULTS IN A CSV FILE
@@ -298,7 +302,7 @@ def run_scraper(context_search):
         
         # print("\nSaving data in a csv file\n")
         
-        df = pd.DataFrame(data,columns=header_col)
+        df = pd.DataFrame(data_wandaloo,columns=header_col)
         df.to_csv(filepath, index=False)
         df.to_json(filepath_json)
 
@@ -314,7 +318,7 @@ def run_scraper(context_search):
             browser.get(page)
             links = get_items_links(browser)
             print("Links --->",links)
-            [stop, data, header_col1] = scrap_pages(browser, links)
+            [stop, data1, header_col1] = scrap_pages(browser, links)
             if stop==False: break # Handle out-dated offers
         
          # SAVE SEARCH RESULTS IN A CSV FILE
@@ -337,22 +341,22 @@ def run_scraper(context_search):
         print("ERROR")
         browser.quit()
 
-    path = os.path.join(THIS_FILE, 'data')
-    os.makedirs(path, exist_ok=True)
-    filepath = os.path.join(path, "search_result.json")
-    filepath1 = os.path.join(path, "search_result1.json")
-    print("PATH:",filepath)
-    with open(filepath,"r") as json_file:
-        json_str = json_file.read()
-        # print(json_str)
-        data = json.loads(json_str)
+    # path = os.path.join(THIS_FILE, 'data')
+    # os.makedirs(path, exist_ok=True)
+    # filepath = os.path.join(path, "search_result.json")
+    # filepath1 = os.path.join(path, "search_result1.json")
+    # print("PATH:",filepath)
+    # with open(filepath,"r") as json_file:
+    #     json_str = json_file.read()
+    #     # print(json_str)
+    #     data = json.loads(json_str)
     print("DATA ------------------->", data)
 
 
-    with open(filepath1, "r") as json_file:
-        json_str1 = json_file.read()
-        # print(json_str1)
-        data1 = json.loads(json_str1)
+    # with open(filepath1, "r") as json_file:
+    #     json_str1 = json_file.read()
+    #     # print(json_str1)
+    #     data1 = json.loads(json_str1)
 
         
     print("DATA 2------------------->",data1)
