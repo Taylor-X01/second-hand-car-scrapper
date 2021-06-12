@@ -1,7 +1,7 @@
 
 {% block list %}
 
-{% for car in car_list %}
+{% for i in car_list %}
 <body>
             <div class="container card mb-3 text-dark bg-light" style="max-width: 1200px;">
                 <div class="row g-0">
@@ -13,8 +13,8 @@
                     </div>
                     <div class="col-md-8 rounded-3">
                     <div class="card-body">
-                        <h5 class="card-title">{{car.brand}} {{car.model}} à {{car.price}} Dh</h5>
-                        <p class="card-text"><small class="text-muted">{{car.city}}</small></p>
+                        <h5 class="card-title">{{car_model.i}} {{car_option.0}} à {{car_price.0}} Dh</h5>
+                        <p class="card-text"><small class="text-muted">VILLE</small></p>
                         <!-- list of vehicule options -->
                         <p>
                             
@@ -24,7 +24,7 @@
                         </p> 
                         <div class="card collapse" id="collapseExample{{car.id}}">
                             <ul>
-                                <p class="card-text">Kilométrage : {{car.km}} Km</p>
+                                <p class="card-text">Kilométrage : {{car_km.0}} Km</p>
                                 <p class="card-text">Couleur : Noir</p>
                                 <p class="card-text">Boite de vitesse : Manuelle</p>
                                 <p class="card-text">Radio Bluetooth : OUI</p>

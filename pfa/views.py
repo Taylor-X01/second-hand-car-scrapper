@@ -26,6 +26,7 @@ from django.template.loader import get_template
 #     return render(request,'hello_world.html',{"title":rendered_item})
 
 def main_page(request):
+    print(request.POST.get("city"))
     return render(request,'home.html')
 
 ## RESULT PAGE
