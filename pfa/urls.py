@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import (
     # contact_page,
     # about_page,
@@ -24,6 +26,10 @@ from .views import (
 from scraper.views import(
     get_item,
 )
+
+# from csvs.views import(
+#     get_data,
+# )
 
 
 urlpatterns = [
@@ -35,3 +41,5 @@ urlpatterns = [
     path('results/',get_item),
     
 ]
+
+urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

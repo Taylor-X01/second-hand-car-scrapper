@@ -10,15 +10,35 @@ import json
 from scraper.scrap import get_page
 
 THIS_FILE = os.path.dirname(__file__)
-browser = webdriver.Chrome(executable_path="C:\\chromedriver\\chromedriver.exe")
 
-context_search = {
-    "mark"  :"dacia",
-    "model" :"logan",
-    "city"  :"rabat",
-    "year"  :"2009",
 
-}
+def getHeadlessDriver():
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36"
+    opts = webdriver.ChromeOptions()
+    opts.headless = True
+    opts.add_argument(f'user-agent={user_agent}')
+    opts.add_argument("--window-size=1920,1080")
+    opts.add_argument('--ignore-certificate-errors')
+    opts.add_argument('--allow-running-insecure-content')
+    opts.add_argument("--disable-extensions")
+    opts.add_argument("--proxy-server='direct://'")
+    opts.add_argument("--proxy-bypass-list=*")
+    opts.add_argument("--start-maximized")
+    opts.add_argument('--disable-gpu')
+    opts.add_argument('--disable-dev-shm-usage')
+    opts.add_argument('--no-sandbox')
+    driver = webdriver.Chrome(executable_path="C:\\chromedriver\\chromedriver.exe",options=opts)
+    return driver
+
+browser = getHeadlessDriver()
+
+# context_search = {
+#     "mark"  :"dacia",
+#     "model" :"logan",
+#     "city"  :"rabat",
+#     "year"  :"2009",
+
+# }
 
 
 """
@@ -29,7 +49,9 @@ aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete
 autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Rechercher" value="" 
 aria-label="Rech." data-ved="0ahUKEwjApJrcj9vwAhVV4OAKHTlgAxYQ39UDCAQ" wfd-id="61"/>
 """
-def search_moteur_ma(browser,context):
+
+
+def search_moteur_ma(browser, context_search):
 
     url     = "https://www.moteur.ma/fr/voiture/achat-voiture-occasion/"
     browser.get(url)
@@ -50,9 +72,9 @@ def search_moteur_ma(browser,context):
     year.click()
     time.sleep(0.4)
 
-    km    = browser.find_element_by_xpath(f"//option[contains(@value,'{context_search['year']}')]")
-    km.click()
-    time.sleep(0.4)
+    # km    = browser.find_element_by_xpath(f"//option[contains(@value,'{context_search['year']}')]")
+    # km.click()
+    # time.sleep(0.4)
 
 
     # city_check = browser.find_element_by_xpath("//select[contains(@id,'regions_cities')]")
@@ -81,8 +103,19 @@ def get_pages_moteur(browser):
         print("Current URL: ",browser.current_url)
         list = [browser.current_url]
     return list
+def get_pages_wandaloo(browser):
+    pages = browser.find_elements_by_xpath("//ul[@class='pages']/li/a[@class='page']")
+    if pages != []:
+        if len(pages) != 1:
+            pages = pages[:-1]
+        list = [url.get_attribute('href') for url in pages]
+        list += [browser.current_url]
+    else:
+        print("Current URL: ", browser.current_url)
+        list = [browser.current_url]
+    return list
 
-def search_wandaloo(browser,context):
+def search_wandaloo(browser, context_search):
     url = "https://www.wandaloo.com/occasion/"
     browser.get(url)
     ##  time.sleep(1)
@@ -136,7 +169,8 @@ def get_items_links(browser):
         print("ERROR fetching URLs")
         return None
     
-def scrap_pages(browser,links):
+
+def scrap_pages(browser, links, context_search):
     table = []
     try:
         current_url = browser.current_url
@@ -160,18 +194,49 @@ def scrap_pages(browser,links):
                     model_name1 = browser.find_element_by_xpath("//h1/span[@class='text_bold']")
                     row.append(model_name1.text)
                     price1 = browser.find_element_by_xpath("//h1/div")
-                    row.append(price1.text)
+                    row.append(price1.text.split()[0])
                     vendor_name = browser.find_element_by_xpath("//div[@class='overview']/div/div/div/div[@class='actions block_tele']/ul/li/a")
                     row.append(vendor_name.text)
                     r_header = model_name1.text + "à" + price1.text
-                    title_list = browser.find_elements_by_xpath("//div[@class='box']/div[@class='detail_line']/span[@class='col-md-6 col-xs-6']")[:4]
-                    tag_list = browser.find_elements_by_xpath( "//div[@class='box']/div[@class='detail_line']/span[@class='text_bold']")[:4]
+                    title_list = browser.find_elements_by_xpath("//div[@class='box']/div[@class='detail_line']/span[@class='col-md-6 col-xs-6']")
+                    tag_list = browser.find_elements_by_xpath( "//div[@class='box']/div[@class='detail_line']/span[@class='text_bold']")
                     print(f"\nitem {i} ------------------------------------------- \n")
-                    for i in range(len(title_list)):
-                        title = title_list[i]
-                        tag = tag_list[i]
-                        print(i," : ",title.text,"\t:",tag.text)
-                        row.append(tag.text)
+                    tag_list_txt = [tag.text for tag in tag_list]
+                    title_list_txt = [title.text for title in title_list]
+                    
+                    print(tag_list_txt)
+                    print(title_list_txt)
+
+                    try:
+                        i = title_list_txt.index('Kilométrage')
+                        print(tag_list_txt[i])
+                    except: print('')
+
+                    try:
+                        i = title_list_txt.index('Année')
+                        print(tag_list_txt[i])
+                    except:
+                        print('')
+
+                    try:
+                        i = title_list_txt.index('Boite de vitesses')
+                        print(tag_list_txt[i])
+                    except: print('')
+
+                    try:
+                        i = title_list_txt.index('Carburant')
+                        print(tag_list_txt[i])
+                    except: print('')
+
+                    try:
+                        i = title_list_txt.index('Première main')
+                        print(tag_list_txt[i])
+                    except: print('')
+                    # for i in range(len(title_list_txt)):
+                    #     title = title_list_txt[i]
+                    #     tag = tag_list_txt[i]
+                    #     print(i," : ",title,"\t:",tag) #need to correct the fields
+                    #     row.append(tag)
                     table1.append(row)
 
             if alert==[]:
@@ -204,8 +269,9 @@ def scrap_pages(browser,links):
                 item_columns.append(r_header1)
                 r_header2   = r_details.find("h4", first=True)
                 item_columns.append(r_header2.text)
-                r_price     = r_details.find("p.prix",first=True)
-                item_columns.append(r_price.text)
+                r_price     = r_details.find("p.prix",first=True).text
+                if "VENDUE" in r_price: continue
+                item_columns.append(r_price)
 
                 ## PARSING VENDOR CONTACT  {vendor_name; vendor_phonenbr}
                 print("\n2.Parsing vendor contact\n")
@@ -233,7 +299,7 @@ def scrap_pages(browser,links):
                 print(f"\nitem {i} ------------------------------------------- \n")
                 print("Car pictures list :")
                 print(imgs_list)
-                print(r_header1,"\n",r_header2.text,"\n","à ",r_price.text,"\n")
+                print(r_header1,"\n",r_header2.text,"\n","à ",r_price,"\n")
                 print("Contact vendeur : ")
                 print("\t",vendor_name.text)
                 print("\t",vendor_phonenbr.text,"\n")
@@ -287,18 +353,25 @@ name="btnK" type="submit" data-ved="0ahUKEwjApJrcj9vwAhVV4OAKHTlgAxYQ4dUDCAs" wf
 
 def run_scraper(context_search):
     try:
+
+        ### WANDALOO.COM ###
+
         search_wandaloo(browser,context_search)
-        print("Base URL : ",browser.current_url)
-        links = get_items_links(browser)
-        print(links)
-        [data_wandaloo, header_col] = scrap_pages(browser, links)
-        
+        pages_list = get_pages_wandaloo(browser)
+        data_wandaloo = []
+        for page in pages_list:
+            browser.get(page)
+            print("Base URL : ",browser.current_url)
+            links = get_items_links(browser)
+            print(links)
+            [data_w, header_col] = scrap_pages(browser, links,context_search)
+            data_wandaloo += data_w
 
         # SAVE SEARCH RESULTS IN A CSV FILE
         path = os.path.join(THIS_FILE, 'data')
         os.makedirs(path, exist_ok=True)
-        filepath = os.path.join(path, "search_result.csv")
-        filepath_json = os.path.join(path, "search_result1.json")
+        filepath = os.path.join(path, "search_result_wandaloo.csv")
+        filepath_json = os.path.join(path, "search_result_wandaloo.json")
         
         # print("\nSaving data in a csv file\n")
         
@@ -308,56 +381,61 @@ def run_scraper(context_search):
 
         time.sleep(1)
 
+        ### MOTEUR.MA ###
         print("starting moteur.ma")
         search_moteur_ma(browser, context_search)
         pages_list = get_pages_moteur(browser) # must return links of other search pages
         print("Base URL : ", browser.current_url)
         print("Pages URLs :",pages_list)
+        data_moteur =[]
         for page in pages_list:
             print("------>",page)
             browser.get(page)
             links = get_items_links(browser)
             print("Links --->",links)
-            [stop, data1, header_col1] = scrap_pages(browser, links)
+            [stop, new_data, header_col1] = scrap_pages(browser, links,context_search)
+            data_moteur += new_data
             if stop==False: break # Handle out-dated offers
         
          # SAVE SEARCH RESULTS IN A CSV FILE
         path = os.path.join(THIS_FILE, 'data')
         os.makedirs(path, exist_ok=True)
-        filepath = os.path.join(path, "search_result1.csv")
-        filepath_json = os.path.join(path, "search_result1.json")
+        filepath = os.path.join(path, "search_result_moteur.csv")
+        filepath_json = os.path.join(path, "search_result_moteur.json")
 
         # print("\nSaving data in a csv file\n")
 
-        df = pd.DataFrame(data,columns=header_col1)
+        df = pd.DataFrame(data_moteur,columns=header_col1)
         df.to_csv(filepath, index=False)
         df.to_json(filepath_json)
 
         time.sleep(1)
-        
         browser.quit()
-    except:
 
+        # path = os.path.join(THIS_FILE, 'data')
+        # os.makedirs(path, exist_ok=True)
+        # filepath = os.path.join(path, "search_result_wandaloo.json")
+        # filepath1 = os.path.join(path, "search_result_moteur.json")
+        # print("PATH:", filepath)
+        # with open(filepath, "r") as json_file:
+        #     json_str = json_file.read()
+        #     # print(json_str)
+        #     data_wandaloo = json.loads(json_str)
+        # print("DATA ------------------->", data_wandaloo)
+
+        # with open(filepath1, "r") as json_file:
+        #     json_str1 = json_file.read()
+        #     # print(json_str1)
+        #     data_moteur = json.loads(json_str1)
+
+        # print("DATA 2------------------->", data_moteur)
+        # browser.close()
+        # return [data_wandaloo, data_moteur]
+
+
+    except:
         print("ERROR")
         browser.quit()
+        browser.close()
 
-    # path = os.path.join(THIS_FILE, 'data')
-    # os.makedirs(path, exist_ok=True)
-    # filepath = os.path.join(path, "search_result.json")
-    # filepath1 = os.path.join(path, "search_result1.json")
-    # print("PATH:",filepath)
-    # with open(filepath,"r") as json_file:
-    #     json_str = json_file.read()
-    #     # print(json_str)
-    #     data = json.loads(json_str)
-    print("DATA ------------------->", data)
-
-
-    # with open(filepath1, "r") as json_file:
-    #     json_str1 = json_file.read()
-    #     # print(json_str1)
-    #     data1 = json.loads(json_str1)
-
-        
-    print("DATA 2------------------->",data1)
-    return [data,data1]
+    
