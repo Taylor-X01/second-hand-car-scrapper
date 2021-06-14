@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import carPost_moteur,carPost_wandaloo
+from .models import carPost
 
-admin.site.register(carPost_moteur)
+admin.site.register(carPost)
 # Register your models here.

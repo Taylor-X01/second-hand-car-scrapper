@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import carPost_moteur,carPost_wandaloo
+from .models import carPost
 from scraper.scrap_selenium import run_scraper
 import os
 import csv
@@ -28,7 +28,7 @@ def get_data(request):
             if i==0:pass
             else:
                 print(row)
-                carPost_wandaloo.objects.create(
+                carPost.objects.create(
                     model   =   row[0],
                     option  =   row[1],
                     price   =   row[2],
@@ -49,13 +49,15 @@ def get_data(request):
             if i==0:pass
             else:
                 print(row)
-                carPost_moteur.objects.create(
+                carPost.objects.create(
                     model   =   row[0],
                     price   =   int(row[1]),
                     vendor  =   row[2],
-                    year    =   row[3],
+                    year    =   row[5],
+                    city    =   "-",
+                    main    =   row[8],
                     km      =   int(row[4]),
-                    carb    =   row[5],
+                    carb    =   row[7],
                     trans   =   row[6],
                 )
 

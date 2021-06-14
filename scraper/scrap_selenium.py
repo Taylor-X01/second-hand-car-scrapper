@@ -60,17 +60,17 @@ def search_moteur_ma(browser, context_search):
     ## SEARCH SECTION
 
     # form = browser.find_element_by_css_selector("form")
-    marque  = browser.find_element_by_xpath(f"//option[contains(@title,'{context_search['mark']}')]")
+    marque  = browser.find_element_by_xpath(f"//option[contains(@value,'{context_search['mark']}')]")
     marque.click()
-    time.sleep(0.4)
+    time.sleep(1)
 
-    modele  = browser.find_element_by_xpath(f"//option[contains(@title,'{context_search['model']}')]")
+    modele  = browser.find_element_by_xpath(f"//option[contains(@value,'{context_search['model']}')]")
     modele.click()
-    time.sleep(0.4)
+    time.sleep(1)
 
     year    = browser.find_element_by_xpath(f"//option[contains(@value,'{context_search['year']}')]")
     year.click()
-    time.sleep(0.4)
+    time.sleep(1)
 
     # km    = browser.find_element_by_xpath(f"//option[contains(@value,'{context_search['year']}')]")
     # km.click()
@@ -85,7 +85,7 @@ def search_moteur_ma(browser, context_search):
     city_check.click()
     time.sleep(0.4)
 
-    ville       = browser.find_element_by_xpath(f"//option[contains(@title,'{context_search['city']}')]")
+    ville       = browser.find_element_by_xpath(f"//option[contains(@value,'{context_search['city']}')]")
     ville.click()
     time.sleep(0.4)
 
@@ -104,16 +104,20 @@ def get_pages_moteur(browser):
         list = [browser.current_url]
     return list
 def get_pages_wandaloo(browser):
-    pages = browser.find_elements_by_xpath("//ul[@class='pages']/li/a[@class='page']")
-    if pages != []:
+    try:
+        a = browser.find_elements_by_xpath("//ul[@class='pages']/li")
+        if len(a)==1:
+            list = [browser.current_url]
+            return list
+        pages = browser.find_elements_by_xpath("//ul[@class='pages']/li/a[@class = 'page']")
         if len(pages) != 1:
             pages = pages[:-1]
         list = [url.get_attribute('href') for url in pages]
         list += [browser.current_url]
-    else:
-        print("Current URL: ", browser.current_url)
-        list = [browser.current_url]
-    return list
+        return list
+    except:
+       list = [browser.current_url]
+       return list
 
 def search_wandaloo(browser, context_search):
     url = "https://www.wandaloo.com/occasion/"
@@ -121,11 +125,14 @@ def search_wandaloo(browser, context_search):
     ##  time.sleep(1)
 
     # Get car city
-    city_name = context_search['city'].capitalize()
-    print("City Name : ",city_name)
-    city_el = browser.find_element_by_xpath(
-        f"//label[text()=' {city_name} ']/input[@name='ville']")
-    city_el.click()
+    try:
+        city_name = context_search['city'].capitalize()
+        print("City Name : ",city_name)
+        city_el = browser.find_element_by_xpath(
+            f"//label[text()=' {city_name} ']/input[@name='ville']")
+        city_el.click()
+    except:
+        pass
     # time.sleep(0.4)
 
     # Get car mark
@@ -176,7 +183,7 @@ def scrap_pages(browser, links, context_search):
         current_url = browser.current_url
         if "moteur.ma" in current_url:
             table1 = []
-            header_col1= ["Modele","Prix","Vendeur","Kilometrage","Annee","Transmission","Carburant"]
+            header_col1= ["URL","Modele","Option","Prix","Vendeur","Ville","Kilometrage","Annee","Transmission","Carburant","Main","Img"]
             for i,url in enumerate(links):
                 browser.get(url)
                 html_text = get_page(url)
@@ -187,57 +194,76 @@ def scrap_pages(browser, links, context_search):
                 alert           = browser.find_elements_by_xpath("//div[@class='alert alert-warning']")
                 # alert = r_html.find(".alert-warning")
                 print("ALERT---->",alert)
+                
                 if alert!=[]:
                     break
                 else:
-                    row =[]
-                    model_name1 = browser.find_element_by_xpath("//h1/span[@class='text_bold']")
-                    row.append(model_name1.text)
-                    price1 = browser.find_element_by_xpath("//h1/div")
-                    row.append(price1.text.split()[0])
-                    vendor_name = browser.find_element_by_xpath("//div[@class='overview']/div/div/div/div[@class='actions block_tele']/ul/li/a")
-                    row.append(vendor_name.text)
-                    r_header = model_name1.text + "à" + price1.text
-                    title_list = browser.find_elements_by_xpath("//div[@class='box']/div[@class='detail_line']/span[@class='col-md-6 col-xs-6']")
-                    tag_list = browser.find_elements_by_xpath( "//div[@class='box']/div[@class='detail_line']/span[@class='text_bold']")
-                    print(f"\nitem {i} ------------------------------------------- \n")
-                    tag_list_txt = [tag.text for tag in tag_list]
-                    title_list_txt = [title.text for title in title_list]
+                        row =[]
+                        row.append(browser.current_url)
+                        model_name1 = browser.find_element_by_xpath("//h1/span[@class='text_bold']")
+                        row.append(model_name1.text)
+                        row.append('-')
+                        try:
+                            price1 = browser.find_element_by_xpath("//h1/div")
+                            row.append(price1.text.split()[0]+price1.text.split()[1])
+                        except:
+                            row.append('0')
+                        vendor_name = browser.find_element_by_xpath("//div[@class='overview']/div/div/div/div[@class='actions block_tele']/ul/li/a")
+                        row.append(vendor_name.text)
+                        city_name = browser.find_element_by_xpath("//div[@id='overview']/div[2]/ul[1]/li[5]/a[1]")
+                        row.append(city_name.text)
+                        title_list = browser.find_elements_by_xpath("//div[@class='box']/div[@class='detail_line']/span[@class='col-md-6 col-xs-6']")
+                        tag_list = browser.find_elements_by_xpath( "//div[@class='box']/div[@class='detail_line']/span[@class='text_bold']")
+                        print(f"\nitem {i} ------------------------------------------- \n")
+                        tag_list_txt = [tag.text for tag in tag_list]
+                        title_list_txt = [title.text for title in title_list]
+                        
+                        print(tag_list_txt)
+                        print(title_list_txt)
+
+                try:
+                        j = int(title_list_txt.index('Kilométrage'))
+                        row.append(tag_list_txt[j].split()[0]+tag_list_txt[j].split()[1])
+                except:
+                        row.append('-')
+
+                try:
+                        j = int(title_list_txt.index('Année'))
+                        row.append(tag_list_txt[j])
+                except:
+                        row.append('-')
+
+                try:
+                        j = int(title_list_txt.index('Boite de vitesses'))
+                        row.append(tag_list_txt[j])
+                except:
+                        row.append('-')
+
+                try:
+                        j = int(title_list_txt.index('Carburant'))
+                        row.append(tag_list_txt[j])
+                except:
+                        row.append('-')
+
+                try:
+                        j = int(title_list_txt.index('Première main'))
+                        row.append(tag_list_txt[j])
+                except:
+                        row.append('-')
                     
-                    print(tag_list_txt)
-                    print(title_list_txt)
-
-                    try:
-                        i = title_list_txt.index('Kilométrage')
-                        print(tag_list_txt[i])
-                    except: print('')
-
-                    try:
-                        i = title_list_txt.index('Année')
-                        print(tag_list_txt[i])
-                    except:
-                        print('')
-
-                    try:
-                        i = title_list_txt.index('Boite de vitesses')
-                        print(tag_list_txt[i])
-                    except: print('')
-
-                    try:
-                        i = title_list_txt.index('Carburant')
-                        print(tag_list_txt[i])
-                    except: print('')
-
-                    try:
-                        i = title_list_txt.index('Première main')
-                        print(tag_list_txt[i])
-                    except: print('')
-                    # for i in range(len(title_list_txt)):
-                    #     title = title_list_txt[i]
-                    #     tag = tag_list_txt[i]
-                    #     print(i," : ",title,"\t:",tag) #need to correct the fields
-                    #     row.append(tag)
-                    table1.append(row)
+                try:
+                        img = browser.find_element_by_xpath("//img[@data-u='image']").get_attribute('src')
+                        if img == []:
+                            img = "/static/img/annonce-sans-photo.jpg"
+                            row.append(img)
+                        else:
+                            print("XOXOXOXOXO : ",img)
+                            row.append(img)
+                            
+                except:
+                        img = "/static/img/annonce-sans-photo.jpg"
+                        row.append(img)
+                table1.append(row)
 
             if alert==[]:
                 print("DATA:",table1)
@@ -247,8 +273,8 @@ def scrap_pages(browser, links, context_search):
                 return [False,table1,header_col1]
                 
         elif "wandaloo" in current_url:
-            # print("you're in Wandaloo")
-            header_col = ["Modele", "option", "Prix", "Vendeur", "Tel", "Annee", "Ville", "Vtype",  "Main", "Kilometrage", "Carburant", "Transmission"]
+            print("you're in Wandaloo")
+            header_col = ["URL","Modele", "option", "Prix", "Vendeur", "Annee", "Ville", "Premiere main", "Kilometrage", "Carburant", "Transmission","Img"]
             for i,url in enumerate(links):
                 browser.get(url)
                 html_text = get_page(url)
@@ -257,21 +283,27 @@ def scrap_pages(browser, links, context_search):
 
                 r_html = HTML(html=html_text)
 
-            # GENERATE A LIST DESCRIBING THE ITEM
+                # GENERATE A LIST DESCRIBING THE ITEM
                 item_columns = []
-            # FOR EACH ITEM WE PARSE:
+                # FOR EACH ITEM WE PARSE:
                 ## PARSING HEADER TEXT {r_header1; r_header2; r_price}
-                print("\n1.Parsing header text\n")
-                r_details   = r_html.find("div#details",first=True)
-                mark_name   = context_search['mark'].upper()
-                model_name  = context_search['model'].upper()
-                r_header1   = mark_name + " " + model_name
-                item_columns.append(r_header1)
-                r_header2   = r_details.find("h4", first=True)
-                item_columns.append(r_header2.text)
-                r_price     = r_details.find("p.prix",first=True).text
-                if "VENDUE" in r_price: continue
-                item_columns.append(r_price)
+                try:
+                    print("\n1.Parsing header text\n")
+                    r_details   = r_html.find("div#details",first=True)
+                    item_columns.append(browser.current_url)
+                    mark_name   = context_search['mark'].upper()
+                    model_name  = context_search['model'].upper()
+                    r_header1   = mark_name + " " + model_name
+                    item_columns.append(r_header1)
+                    r_header2   = r_details.find("h4", first=True)
+                    item_columns.append(r_header2.text)
+                    r_price1     = r_details.find("p.prix",first=True).text
+                    r_price = r_price1.split()[0].split('.')[0]+r_price1.split()[0].split('.')[1]
+                    if "VENDUE" in r_price1: continue
+                    item_columns.append(r_price)
+                except:
+                    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+                    continue
 
                 ## PARSING VENDOR CONTACT  {vendor_name; vendor_phonenbr}
                 print("\n2.Parsing vendor contact\n")
@@ -284,7 +316,7 @@ def scrap_pages(browser, links, context_search):
                     vendor_name     = r_vendor.find("p.name", first=True)
                     vendor_phonenbr = r_vendor.find("p.mobile", first=True)
                     item_columns.append(vendor_name.text)
-                    item_columns.append(vendor_phonenbr.text)
+                    # item_columns.append(vendor_phonenbr.text)
 
                 ## PARSING GALLERY IMAGES {imgs_list}
                 print("\n3.Parsing gallery images\n")
@@ -303,11 +335,27 @@ def scrap_pages(browser, links, context_search):
                 print("Contact vendeur : ")
                 print("\t",vendor_name.text)
                 print("\t",vendor_phonenbr.text,"\n")
-                for line in item_desc:
-                    title = line.find("p.titre")
-                    tag   = line.find("p.tag")
-                    item_columns.append(tag[0].text)
-                    print(title[0].text,"   \t: ",tag[0].text)
+                for i,line in  enumerate(item_desc):
+                    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                    if i==2: continue
+                    else:
+                        title = line.find("p.titre")
+                        tag   = line.find("p.tag")
+                        if i==3:
+                            if tag[0].text == "Première":
+                                item_columns.append('oui')
+                            else: 
+                                item_columns.append('-')
+                        
+                        else:
+                            item_columns.append(tag[0].text)
+                        print(title[0].text,"   \t: ",tag[0].text)
+                
+                if imgs_list == []:
+                    img = "/static/img/annonce-sans-photo.jpg"
+                    item_columns.append(img)
+                else:    
+                    item_columns.append(imgs_list)
                 
                 ## ADD THIS ITEM TO THE TABLE LIST 
                 table.append(item_columns)
@@ -358,6 +406,7 @@ def run_scraper(context_search):
 
         search_wandaloo(browser,context_search)
         pages_list = get_pages_wandaloo(browser)
+        print("Links Pages : ",pages_list)
         data_wandaloo = []
         for page in pages_list:
             browser.get(page)
